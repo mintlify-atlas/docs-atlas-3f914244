@@ -1,0 +1,331 @@
+---
+title: 'Coverage Component'
+description: 'Interactive map section with Google Maps embed and bento grid layout'
+---
+
+# Coverage Component
+
+The **Coverage** component displays Telenet's headquarters location using a Google Maps embed within a modern bento grid layout. Features animated cards with office information, hours, and directions.
+
+## Features
+
+- **Google Maps embed**: Interactive map showing office location
+- **Bento grid layout**: Responsive card-based design
+- **Office information**: Address, hours, and contact details
+- **Staggered animations**: Cards animate in sequence
+- **Direct navigation**: Click-to-open in Google Maps
+- **Responsive design**: Adapts to mobile and desktop layouts
+
+## Dependencies
+
+```jsx
+import { motion } from 'framer-motion'
+```
+
+- **Framer Motion**: For card entrance animations
+
+## Google Maps Configuration
+
+The component uses a Google Maps embed URL:
+
+```jsx
+const GOOGLE_MAPS_EMBED = "https://maps.google.com/maps?q=Corporacion+Telenet+de+Venezuela,+Barinas&t=&z=17&ie=UTF8&iwloc=&output=embed";
+```
+
+### Map URL Parameters
+
+<ParamField path="q" type="string">
+  Location query: "Corporacion Telenet de Venezuela, Barinas"
+</ParamField>
+
+<ParamField path="z" type="number">
+  Zoom level: 17 (street-level view)
+</ParamField>
+
+<ParamField path="output" type="string">
+  Set to "embed" for iframe embedding
+</ParamField>
+
+## Office Information
+
+### Address Details
+
+```jsx
+<p>Local 2-97, Sector Independencia I<br />
+    Planta baja, C. Atahualpa<br />
+    Barinas 5201, Venezuela</p>
+```
+
+### Business Hours
+
+```jsx
+<div className="hours-content">
+    <div className="hour-row">
+        <strong>Lun – Vie</strong>
+        <span>8:00 AM – 5:00 PM</span>
+    </div>
+    <div className="hour-row">
+        <strong>Sábado</strong>
+        <span>8:00 AM – 12:00 PM</span>
+    </div>
+</div>
+```
+
+## Bento Grid Layout
+
+The component uses a 12-column bento grid with 4 cards:
+
+1. **Map Card** (8 columns): Interactive Google Maps iframe
+2. **Address Card** (4 columns): Office location details
+3. **Hours Card** (4 columns): Business hours
+4. **Action Card** (4 columns): Link to open in Google Maps
+
+## Animation Configuration
+
+### Container Animation (Stagger Children)
+
+```jsx
+<motion.div
+    className="bento-grid"
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, margin: "-100px" }}
+    variants={{
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.15
+            }
+        }
+    }}
+>
+```
+
+- Triggers when scrolled into view
+- 150ms delay between each card
+
+### Map Card Animation
+
+```jsx
+<motion.div
+    className="bento-card bento-map"
+    variants={{
+        hidden: { opacity: 0, scale: 0.95 },
+        visible: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: "easeOut" } }
+    }}
+>
+```
+
+### Info Cards Animation
+
+```jsx
+<motion.div
+    className="bento-card bento-info"
+    variants={{
+        hidden: { opacity: 0, x: 20 },
+        visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+    }}
+>
+```
+
+- Slides in from the right (20px offset)
+- Faster animation (600ms)
+
+## Complete Component Code
+
+```jsx
+import { motion } from 'framer-motion';
+import './Coverage.css';
+
+const GOOGLE_MAPS_EMBED = "https://maps.google.com/maps?q=Corporacion+Telenet+de+Venezuela,+Barinas&t=&z=17&ie=UTF8&iwloc=&output=embed";
+
+export default function Coverage() {
+    return (
+        <section className="coverage" id="cobertura">
+            <div className="coverage__bg-glow"></div>
+
+            <div className="container">
+                <motion.div
+                    className="coverage__header"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8 }}
+                >
+                    <h2 className="section-title">
+                        Nuestra <span>Sede Principal</span>
+                    </h2>
+                    <p className="section-subtitle">
+                        Encuéntranos en el centro tecnológico de Barinas. Ven y descubre el poder de la fibra óptica real.
+                    </p>
+                </motion.div>
+
+                <motion.div
+                    className="bento-grid"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                            opacity: 1,
+                            transition: {
+                                staggerChildren: 0.15
+                            }
+                        }
+                    }}
+                >
+                    {/* Map Card (8 columns) */}
+                    <motion.div
+                        className="bento-card bento-map"
+                        variants={{
+                            hidden: { opacity: 0, scale: 0.95 },
+                            visible: { opacity: 1, scale: 1, transition: { duration: 0.8, ease: "easeOut" } }
+                        }}
+                    >
+                        <iframe
+                            title="Telenet Sede Principal - Barinas"
+                            src={GOOGLE_MAPS_EMBED}
+                            width="100%"
+                            height="100%"
+                            style={{ border: 0 }}
+                            allowFullScreen
+                            loading="lazy"
+                            referrerPolicy="no-referrer-when-downgrade"
+                        />
+                    </motion.div>
+
+                    {/* Address Card (4 columns) */}
+                    <motion.div
+                        className="bento-card bento-info"
+                        variants={{
+                            hidden: { opacity: 0, x: 20 },
+                            visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+                        }}
+                    >
+                        <div className="bento-icon">
+                            <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                            </svg>
+                        </div>
+                        <h3>Edificio Telenet</h3>
+                        <p>Local 2-97, Sector Independencia I<br />
+                            Planta baja, C. Atahualpa<br />
+                            Barinas 5201, Venezuela</p>
+                    </motion.div>
+
+                    {/* Hours Card (4 columns) */}
+                    <motion.div
+                        className="bento-card bento-hours"
+                        variants={{
+                            hidden: { opacity: 0, x: 20 },
+                            visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+                        }}
+                    >
+                        <div className="bento-icon bento-icon--blue">
+                            <svg fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div className="hours-content">
+                            <div className="hour-row">
+                                <strong>Lun – Vie</strong>
+                                <span>8:00 AM – 5:00 PM</span>
+                            </div>
+                            <div className="hour-row">
+                                <strong>Sábado</strong>
+                                <span>8:00 AM – 12:00 PM</span>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Action Card (4 columns) */}
+                    <motion.a
+                        href="https://www.google.com/maps/place/Corporacion+Telenet+de+Venezuela/@8.6194813,-70.2298205,690m/data=!3m2!1e3!4b1!4m6!3m5!1s0x8e7b582de59f2ff1:0xed34546717687d82"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="bento-card bento-action"
+                        variants={{
+                            hidden: { opacity: 0, x: 20 },
+                            visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: "easeOut" } }
+                        }}
+                    >
+                        <div className="bento-action__content">
+                            <h3>Llegar Ahora</h3>
+                            <p>Abrir en Google Maps</p>
+                        </div>
+                        <div className="bento-action__arrow">
+                            <svg fill="none" viewBox="0 0 24 24" strokeWidth={3} stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75" />
+                            </svg>
+                        </div>
+                    </motion.a>
+                </motion.div>
+            </div>
+        </section>
+    );
+}
+```
+
+## Usage
+
+```jsx
+import Coverage from './components/Coverage'
+
+function App() {
+    return (
+        <div>
+            <Coverage />
+        </div>
+    )
+}
+```
+
+## Customization
+
+### Change Location
+
+```jsx
+const GOOGLE_MAPS_EMBED = "https://maps.google.com/maps?q=Your+Business+Name,+City&t=&z=17&ie=UTF8&iwloc=&output=embed";
+```
+
+### Update Address
+
+```jsx
+<p>Your Street Address<br />
+    City, State ZIP<br />
+    Country</p>
+```
+
+### Modify Hours
+
+```jsx
+<div className="hours-content">
+    <div className="hour-row">
+        <strong>Mon – Fri</strong>
+        <span>9:00 AM – 6:00 PM</span>
+    </div>
+    <div className="hour-row">
+        <strong>Saturday</strong>
+        <span>10:00 AM – 2:00 PM</span>
+    </div>
+    <div className="hour-row">
+        <strong>Sunday</strong>
+        <span>Closed</span>
+    </div>
+</div>
+```
+
+### Update Google Maps Link
+
+Replace the full URL in the action card's `href` attribute with your location's Google Maps URL.
+
+## Accessibility
+
+- **iframe title**: Descriptive title for screen readers
+- **loading="lazy"**: Deferred loading for performance
+- **allowFullScreen**: Enables fullscreen mode in map
+- **referrerPolicy**: Privacy protection
+- **Semantic HTML**: Proper heading hierarchy

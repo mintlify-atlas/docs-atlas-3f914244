@@ -1,0 +1,263 @@
+---
+title: 'Navbar Component'
+description: 'Sticky navigation bar with smooth scrolling, mobile menu, and scroll-based styling'
+---
+
+# Navbar Component
+
+The **Navbar** component is a responsive navigation header that changes appearance on scroll and includes a mobile hamburger menu. It features smooth entrance animations and anchor-based navigation.
+
+## Features
+
+- **Scroll-aware styling**: Background becomes opaque when scrolling past 40px
+- **Smooth entrance animation**: Slides down from top on page load
+- **Responsive mobile menu**: Hamburger menu for small screens
+- **Anchor navigation**: Smooth scrolling to page sections
+- **Branded logo**: Image logo with text branding
+- **CTA button**: Prominent "Contratar Ahora" call-to-action
+
+## Dependencies
+
+```jsx
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+```
+
+- **React**: `useState` for menu and scroll state, `useEffect` for scroll listener
+- **Framer Motion**: `motion` for entrance animation
+
+## Component State
+
+<ParamField path="scrolled" type="boolean">
+  Tracks whether user has scrolled past 40px threshold
+</ParamField>
+
+<ParamField path="menuOpen" type="boolean">
+  Controls mobile menu visibility
+</ParamField>
+
+## Navigation Links
+
+The navbar uses a static array of navigation items:
+
+```jsx
+const links = ['Planes', 'Beneficios', 'Cobertura', 'FAQ']
+```
+
+These are automatically converted to lowercase anchor links:
+- "Planes" → `#planes`
+- "Beneficios" → `#beneficios`
+- "Cobertura" → `#cobertura`
+- "FAQ" → `#faq`
+
+## Scroll Detection
+
+The component tracks scroll position to apply styling:
+
+```jsx
+const [scrolled, setScrolled] = useState(false)
+
+useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+}, [])
+```
+
+- Adds `navbar--scrolled` class when scrolled past 40px
+- Also applies when mobile menu is open
+- Cleanup removes event listener on unmount
+
+## Animation Configuration
+
+### Initial Entrance Animation
+
+```jsx
+<motion.header 
+    className={`navbar ${scrolled || menuOpen ? 'navbar--scrolled' : ''}`}
+    initial={{ y: -100 }}
+    animate={{ y: 0 }}
+    transition={{ duration: 0.6, ease: "easeOut" }}
+>
+```
+
+- **Initial**: Positioned 100px above viewport
+- **Animate**: Slides down to normal position
+- **Duration**: 600ms with easeOut easing
+
+## Desktop Navigation Structure
+
+```jsx
+<nav className="navbar__links">
+    {links.map(link => (
+        <a key={link} href={`#${link.toLowerCase()}`} className="navbar__link">
+            {link}
+        </a>
+    ))}
+</nav>
+```
+
+## Mobile Menu
+
+The mobile menu includes:
+
+1. **Hamburger Button**: 3-bar icon that animates when clicked
+2. **Overlay Menu**: Full-width dropdown with navigation links
+3. **Auto-close**: Menu closes when any link is clicked
+
+```jsx
+<button
+    className={`navbar__burger ${menuOpen ? 'open' : ''}`}
+    onClick={() => setMenuOpen(!menuOpen)}
+    aria-label="Abrir menú"
+>
+    <span /><span /><span />
+</button>
+
+<div className={`navbar__mobile ${menuOpen ? 'navbar__mobile--open' : ''}`}>
+    {links.map(link => (
+        <a key={link} href={`#${link.toLowerCase()}`} className="navbar__mobile-link"
+            onClick={() => setMenuOpen(false)}>
+            {link}
+        </a>
+    ))}
+    <a href="#contacto" className="btn-17" onClick={() => setMenuOpen(false)}>
+        <span className="text-container">
+            <span className="text">Contratar Ahora</span>
+        </span>
+    </a>
+</div>
+```
+
+## Complete Component Code
+
+```jsx
+import './Navbar.css'
+import { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+
+export default function Navbar() {
+    const [scrolled, setScrolled] = useState(false)
+    const [menuOpen, setMenuOpen] = useState(false)
+
+    useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 40)
+        window.addEventListener('scroll', onScroll)
+        return () => window.removeEventListener('scroll', onScroll)
+    }, [])
+
+    const links = ['Planes', 'Beneficios', 'Cobertura', 'FAQ']
+
+    return (
+        <motion.header 
+            className={`navbar ${scrolled || menuOpen ? 'navbar--scrolled' : ''}`}
+            initial={{ y: -100 }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+        >
+            <div className="container navbar__inner">
+                {/* Logo */}
+                <a href="#hero" className="navbar__logo" onClick={() => setMenuOpen(false)}>
+                    <img src="/telenet.jpg" alt="Telenet Logo" className="navbar__logo-img" />
+                    <span className="navbar__brand">Tele<span>net</span></span>
+                </a>
+
+                {/* Desktop Nav */}
+                <nav className="navbar__links">
+                    {links.map(link => (
+                        <a key={link} href={`#${link.toLowerCase()}`} className="navbar__link">
+                            {link}
+                        </a>
+                    ))}
+                </nav>
+
+                {/* CTA Button */}
+                <a href="#contacto" className="btn-17 navbar__cta">
+                    <span className="text-container">
+                        <span className="text">Contratar Ahora</span>
+                    </span>
+                </a>
+
+                {/* Hamburger */}
+                <button
+                    className={`navbar__burger ${menuOpen ? 'open' : ''}`}
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    aria-label="Abrir menú"
+                >
+                    <span /><span /><span />
+                </button>
+            </div>
+
+            {/* Mobile Menu */}
+            <div className={`navbar__mobile ${menuOpen ? 'navbar__mobile--open' : ''}`}>
+                {links.map(link => (
+                    <a key={link} href={`#${link.toLowerCase()}`} className="navbar__mobile-link"
+                        onClick={() => setMenuOpen(false)}>
+                        {link}
+                    </a>
+                ))}
+                <a href="#contacto" className="btn-17" onClick={() => setMenuOpen(false)}>
+                    <span className="text-container">
+                        <span className="text">Contratar Ahora</span>
+                    </span>
+                </a>
+            </div>
+        </motion.header>
+    )
+}
+```
+
+## Usage
+
+```jsx
+import Navbar from './components/Navbar'
+
+function App() {
+    return (
+        <div>
+            <Navbar />
+            {/* Page sections */}
+        </div>
+    )
+}
+```
+
+## Customization
+
+### Change Navigation Links
+
+```jsx
+const links = ['Products', 'Features', 'Pricing', 'Contact']
+```
+
+### Adjust Scroll Threshold
+
+```jsx
+const onScroll = () => setScrolled(window.scrollY > 100) // 100px instead of 40px
+```
+
+### Modify Logo
+
+```jsx
+<a href="#hero" className="navbar__logo">
+    <img src="/your-logo.png" alt="Your Logo" className="navbar__logo-img" />
+    <span className="navbar__brand">Your<span>Brand</span></span>
+</a>
+```
+
+### Change CTA Button
+
+```jsx
+<a href="#contact" className="btn-17 navbar__cta">
+    <span className="text-container">
+        <span className="text">Get Started</span>
+    </span>
+</a>
+```
+
+## Accessibility
+
+- Semantic `<header>` and `<nav>` elements
+- `aria-label` on hamburger button for screen readers
+- Keyboard navigation support through anchor links
+- Focus states on interactive elements (handled by CSS)

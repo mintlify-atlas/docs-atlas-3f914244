@@ -1,0 +1,317 @@
+---
+title: 'Hero Component'
+description: 'Auto-rotating carousel component with Framer Motion animations for the landing page hero section'
+---
+
+# Hero Component
+
+The **Hero** component is an auto-rotating carousel with 3 slides showcasing different value propositions of Telenet's fiber optic services. It features smooth transitions, animated content, and interactive pagination dots.
+
+## Features
+
+- **Auto-rotation**: Slides automatically change every 6 seconds
+- **Smooth animations**: Powered by Framer Motion's `AnimatePresence`
+- **Background images**: Each slide has a unique background image
+- **Animated text content**: Staggered entrance animations for text elements
+- **Interactive pagination**: Clickable dots for manual slide navigation
+- **Responsive CTAs**: Two call-to-action buttons per slide with smooth scrolling
+
+## Dependencies
+
+```jsx
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+```
+
+- **React**: `useState` for current slide state, `useEffect` for auto-rotation timer
+- **Framer Motion**: `motion`, `AnimatePresence` for slide transitions
+
+## Slide Data Structure
+
+The component uses a static array of 3 slide objects:
+
+```jsx
+const slides = [
+    {
+        id: 1,
+        headline: "CONEXIÓN ESTABLE",
+        title: "LLEVA TU <br/> <span class='highlight'>ROUTER</span> HOY",
+        subtitle: "Únete a Telenet y disfruta del WIFI más estable del mercado con LA MEJOR ATENCIÓN al cliente.",
+        image: "/hero_router.webp",
+        cta1: "Validar Cobertura",
+        link1: "#cobertura",
+        cta2: "Ver Ofertas",
+        link2: "#planes"
+    },
+    {
+        id: 2,
+        headline: "NUEVA VELOCIDAD",
+        title: "VUELA A <br/> 300 <span class='highlight'>Mbps</span>",
+        subtitle: "Navega, juega y streamea sin límites con nuestra fibra óptica de última generación real.",
+        image: "/hero_fiber.webp",
+        cta1: "Contratar Ahora",
+        link1: "#contacto",
+        cta2: "Planes Gamers",
+        link2: "#planes"
+    },
+    {
+        id: 3,
+        headline: "HOGAR INTELIGENTE",
+        title: "ENTRETENIMIENTO <br/> <span class='highlight'>TOTAL</span>",
+        subtitle: "Conecta todos tus dispositivos al mismo tiempo sin perder velocidad. Diseño robusto para tu hogar.",
+        image: "/hero_family.webp",
+        cta1: "Ver Beneficios",
+        link1: "#beneficios",
+        cta2: "Ayuda y FAQ",
+        link2: "#faq"
+    }
+]
+```
+
+### Slide Object Properties
+
+<ParamField path="id" type="number">
+  Unique identifier for each slide
+</ParamField>
+
+<ParamField path="headline" type="string">
+  Small text label displayed above the title
+</ParamField>
+
+<ParamField path="title" type="string">
+  Main heading with HTML support (uses `dangerouslySetInnerHTML`)
+</ParamField>
+
+<ParamField path="subtitle" type="string">
+  Descriptive paragraph below the title
+</ParamField>
+
+<ParamField path="image" type="string">
+  Path to background image (webp format)
+</ParamField>
+
+<ParamField path="cta1" type="string">
+  Text for primary call-to-action button
+</ParamField>
+
+<ParamField path="link1" type="string">
+  Anchor link for primary CTA
+</ParamField>
+
+<ParamField path="cta2" type="string">
+  Text for secondary call-to-action button
+</ParamField>
+
+<ParamField path="link2" type="string">
+  Anchor link for secondary CTA
+</ParamField>
+
+## Animation Configuration
+
+### Slide Transition (AnimatePresence)
+
+```jsx
+<motion.div
+    key={current}
+    className="hero__slide"
+    initial={{ opacity: 0, scale: 1.05 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.8, ease: "easeInOut" }}
+    style={{ backgroundImage: `url(${slides[current].image})` }}
+>
+```
+
+- **Initial state**: Slightly scaled up (1.05) and invisible
+- **Animate to**: Full opacity and normal scale
+- **Exit**: Fade out to opacity 0
+- **Duration**: 800ms with easeInOut easing
+
+### Text Content Animation
+
+```jsx
+<motion.div 
+    className="hero__text-box"
+    initial={{ opacity: 0, x: -50 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: 0.8, delay: 0.2 }}
+>
+```
+
+- Slides in from the left (-50px)
+- 200ms delay for staggered effect
+
+## Auto-Rotation Logic
+
+```jsx
+const [current, setCurrent] = useState(0)
+
+useEffect(() => {
+    const timer = setInterval(() => {
+        setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
+    }, 6000)
+    return () => clearInterval(timer)
+}, [])
+```
+
+- Timer advances slide every **6000ms (6 seconds)**
+- Loops back to first slide after the last one
+- Cleanup function removes timer on unmount
+
+## Complete Component Code
+
+```jsx
+import { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import './Hero.css'
+
+const slides = [
+    {
+        id: 1,
+        headline: "CONEXIÓN ESTABLE",
+        title: "LLEVA TU <br/> <span class='highlight'>ROUTER</span> HOY",
+        subtitle: "Únete a Telenet y disfruta del WIFI más estable del mercado con LA MEJOR ATENCIÓN al cliente.",
+        image: "/hero_router.webp",
+        cta1: "Validar Cobertura",
+        link1: "#cobertura",
+        cta2: "Ver Ofertas",
+        link2: "#planes"
+    },
+    {
+        id: 2,
+        headline: "NUEVA VELOCIDAD",
+        title: "VUELA A <br/> 300 <span class='highlight'>Mbps</span>",
+        subtitle: "Navega, juega y streamea sin límites con nuestra fibra óptica de última generación real.",
+        image: "/hero_fiber.webp",
+        cta1: "Contratar Ahora",
+        link1: "#contacto",
+        cta2: "Planes Gamers",
+        link2: "#planes"
+    },
+    {
+        id: 3,
+        headline: "HOGAR INTELIGENTE",
+        title: "ENTRETENIMIENTO <br/> <span class='highlight'>TOTAL</span>",
+        subtitle: "Conecta todos tus dispositivos al mismo tiempo sin perder velocidad. Diseño robusto para tu hogar.",
+        image: "/hero_family.webp",
+        cta1: "Ver Beneficios",
+        link1: "#beneficios",
+        cta2: "Ayuda y FAQ",
+        link2: "#faq"
+    }
+]
+
+export default function Hero() {
+    const [current, setCurrent] = useState(0)
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
+        }, 6000)
+        return () => clearInterval(timer)
+    }, [])
+
+    return (
+        <section className="hero" id="hero">
+            <AnimatePresence mode="popLayout">
+                <motion.div
+                    key={current}
+                    className="hero__slide"
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8, ease: "easeInOut" }}
+                    style={{ backgroundImage: `url(${slides[current].image})` }}
+                >
+                    <div className="hero__overlay"></div>
+                    
+                    <div className="container hero__content">
+                        <motion.div 
+                            className="hero__text-box"
+                            initial={{ opacity: 0, x: -50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                        >
+                            <span className="hero__headline">{slides[current].headline}</span>
+                            <h1 
+                                className="hero__title" 
+                                dangerouslySetInnerHTML={{ __html: slides[current].title }}
+                            />
+                            <p className="hero__subtitle">{slides[current].subtitle}</p>
+                            
+                            <div className="hero__actions">
+                                <a href={slides[current].link1} className="btn-17">
+                                    <span className="text-container">
+                                        <span className="text">{slides[current].cta1}</span>
+                                    </span>
+                                </a>
+                                <a href={slides[current].link2} className="btn-hero-outline">
+                                    {slides[current].cta2}
+                                </a>
+                            </div>
+                        </motion.div>
+                    </div>
+                </motion.div>
+            </AnimatePresence>
+
+            {/* Pagination Dots */}
+            <div className="hero__dots">
+                {slides.map((_, index) => (
+                    <button
+                        key={index}
+                        className={`hero__dot ${index === current ? 'active' : ''}`}
+                        onClick={() => setCurrent(index)}
+                        aria-label={`Ir al slide ${index + 1}`}
+                    />
+                ))}
+            </div>
+        </section>
+    )
+}
+```
+
+## Usage
+
+```jsx
+import Hero from './components/Hero'
+
+function App() {
+    return (
+        <div>
+            <Hero />
+            {/* Other sections */}
+        </div>
+    )
+}
+```
+
+## Customization
+
+To modify slides, edit the `slides` array:
+
+```jsx
+const slides = [
+    {
+        id: 1,
+        headline: "YOUR HEADLINE",
+        title: "Your <span class='highlight'>Title</span>",
+        subtitle: "Your subtitle text",
+        image: "/your-image.webp",
+        cta1: "Button 1",
+        link1: "#section1",
+        cta2: "Button 2",
+        link2: "#section2"
+    },
+    // Add more slides...
+]
+```
+
+### Adjust Auto-Rotation Speed
+
+Change the interval in the `useEffect`:
+
+```jsx
+setInterval(() => {
+    setCurrent((prev) => (prev === slides.length - 1 ? 0 : prev + 1))
+}, 8000) // 8 seconds instead of 6
+```

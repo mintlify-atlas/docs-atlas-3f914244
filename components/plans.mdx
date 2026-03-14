@@ -1,0 +1,414 @@
+---
+title: 'Plans Component'
+description: 'Pricing cards carousel with Globe background animation and horizontal scrolling'
+---
+
+# Plans Component
+
+The **Plans** component displays pricing tiers in an interactive carousel format with animated 3D globe background. Features horizontal scrolling, hover effects, and responsive design.
+
+## Features
+
+- **3 pricing tiers**: Básico, Hogar+, and Pro Gaming
+- **Animated Globe background**: Custom SVG globe with connection nodes
+- **Horizontal scroll carousel**: Arrow navigation for mobile/tablet
+- **Hover animations**: Cards lift and scale on hover
+- **Staggered entrance**: Cards animate in sequence
+- **Popular badge**: Highlights recommended plan
+- **Responsive layout**: Adapts from desktop grid to mobile carousel
+
+## Dependencies
+
+```jsx
+import { useRef } from 'react'
+import { motion } from 'framer-motion'
+import Globe from './Globe'
+```
+
+- **React**: `useRef` for scroll container reference
+- **Framer Motion**: `motion` for animations
+- **Globe**: Custom animated globe component with SVG rendering
+
+## Plan Data Structure
+
+The component uses a static array of pricing plans:
+
+```jsx
+const plans = [
+    {
+        name: 'Básico',
+        speed: 300,
+        price: 19.99,
+        popular: false,
+        color: 'blue',
+        perks: [
+            'Fibra óptica simétrica',
+            'Router WiFi 6 incluido',
+            'Soporte técnico 24/7',
+            'Instalación gratis',
+        ],
+    },
+    {
+        name: 'Hogar+',
+        speed: 600,
+        price: 29.99,
+        popular: true,
+        color: 'featured',
+        perks: [
+            'Fibra óptica simétrica',
+            'Router WiFi 6 incluido',
+            'Soporte técnico 24/7',
+            'Instalación gratis',
+            '1 Repetidor Mesh gratis',
+        ],
+    },
+    {
+        name: 'Pro Gaming',
+        speed: 1000,
+        price: 49.99,
+        popular: false,
+        color: 'premium',
+        perks: [
+            'Fibra óptica simétrica',
+            'Router WiFi 6E incluido',
+            'Soporte técnico VIP 24/7',
+            'Instalación gratis',
+            '2 Repetidores Mesh gratis',
+            'IP Fija',
+        ],
+    },
+]
+```
+
+### Plan Object Properties
+
+<ParamField path="name" type="string">
+  Plan name displayed in the card header
+</ParamField>
+
+<ParamField path="speed" type="number">
+  Internet speed in Mbps
+</ParamField>
+
+<ParamField path="price" type="number">
+  Monthly price in USD
+</ParamField>
+
+<ParamField path="popular" type="boolean">
+  Whether to show "Más Popular" badge
+</ParamField>
+
+<ParamField path="color" type="string">
+  Color theme: 'blue', 'featured', or 'premium'
+</ParamField>
+
+<ParamField path="perks" type="array">
+  Array of feature strings shown as checkmark list
+</ParamField>
+
+## Horizontal Scroll Implementation
+
+The carousel uses native CSS scroll with programmatic control:
+
+```jsx
+const gridRef = useRef(null)
+
+const scroll = (direction) => {
+    if (gridRef.current) {
+        const { clientWidth } = gridRef.current;
+        // Approx width of a card + gap
+        const scrollAmount = clientWidth > 600 ? 340 : clientWidth * 0.85;
+        gridRef.current.scrollBy({
+            left: direction === 'left' ? -scrollAmount : scrollAmount,
+            behavior: 'smooth'
+        });
+    }
+};
+```
+
+- Desktop: Scrolls by 340px (card width + gap)
+- Mobile: Scrolls by 85% of container width
+- Smooth scroll behavior
+
+## Card Animations
+
+### Entrance Animation with Offset
+
+```jsx
+const offsets = [-105, 0, 105];
+const baseScale = [0.9, 1, 0.9];
+
+<motion.div
+    key={i}
+    className={`plan-card plan-card--${plan.color}`}
+    initial={{
+        opacity: 0,
+        y: 30,
+        x: `${offsets[i]}%`
+    }}
+    whileInView={{
+        opacity: 1,
+        y: 0,
+        x: `${offsets[i]}%`
+    }}
+    viewport={{ once: true, margin: "-100px" }}
+    transition={{
+        duration: 0.8,
+        delay: i * 0.1,
+        ease: "easeOut"
+    }}
+    whileHover={{
+        y: -10,
+        scale: baseScale[i] + 0.05,
+        transition: { duration: 0.3 }
+    }}
+>
+```
+
+- **Staggered delay**: Each card delays by 100ms
+- **Horizontal offset**: Side cards offset by ±105% for depth effect
+- **Hover lift**: Rises 10px and scales by 5%
+
+## Globe Background Integration
+
+```jsx
+<section className="plans" id="planes" ref={sectionRef}>
+    <div className="plans__bg-glow" />
+    <Globe />
+    <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+        {/* Content */}
+    </div>
+</section>
+```
+
+The Globe component renders as an absolute positioned background element.
+
+## Complete Component Code
+
+```jsx
+import { useRef } from 'react'
+import { motion } from 'framer-motion'
+import Globe from './Globe'
+import './Plans.css'
+
+const plans = [
+    {
+        name: 'Básico',
+        speed: 300,
+        price: 19.99,
+        popular: false,
+        color: 'blue',
+        perks: [
+            'Fibra óptica simétrica',
+            'Router WiFi 6 incluido',
+            'Soporte técnico 24/7',
+            'Instalación gratis',
+        ],
+    },
+    {
+        name: 'Hogar+',
+        speed: 600,
+        price: 29.99,
+        popular: true,
+        color: 'featured',
+        perks: [
+            'Fibra óptica simétrica',
+            'Router WiFi 6 incluido',
+            'Soporte técnico 24/7',
+            'Instalación gratis',
+            '1 Repetidor Mesh gratis',
+        ],
+    },
+    {
+        name: 'Pro Gaming',
+        speed: 1000,
+        price: 49.99,
+        popular: false,
+        color: 'premium',
+        perks: [
+            'Fibra óptica simétrica',
+            'Router WiFi 6E incluido',
+            'Soporte técnico VIP 24/7',
+            'Instalación gratis',
+            '2 Repetidores Mesh gratis',
+            'IP Fija',
+        ],
+    },
+]
+
+export default function Plans() {
+    const sectionRef = useRef(null)
+    const gridRef = useRef(null)
+
+    const scroll = (direction) => {
+        if (gridRef.current) {
+            const { clientWidth } = gridRef.current;
+            const scrollAmount = clientWidth > 600 ? 340 : clientWidth * 0.85;
+            gridRef.current.scrollBy({
+                left: direction === 'left' ? -scrollAmount : scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+    };
+
+    return (
+        <section className="plans" id="planes" ref={sectionRef}>
+            <div className="plans__bg-glow" />
+            <Globe />
+            <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+                <motion.div
+                    className="plans__header"
+                    initial={{ opacity: 0, y: 30 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-100px" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                >
+                    <h2 className="section-title">
+                        Elegí el plan <span>perfecto</span> para vos
+                    </h2>
+                    <p className="section-subtitle">
+                        Todos nuestros planes incluyen fibra óptica pura, sin velocidades compartidas ni letra pequeña.
+                    </p>
+                </motion.div>
+
+                <div className="plans__carousel-wrapper">
+                    <button
+                        className="plans__arrow plans__arrow--left"
+                        onClick={() => scroll('left')}
+                        aria-label="Ver plan anterior"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M15 18l-6-6 6-6" />
+                        </svg>
+                    </button>
+
+                    <div className="plans__grid" ref={gridRef}>
+                        {plans.map((plan, i) => {
+                            const offsets = [-105, 0, 105];
+                            const baseScale = [0.9, 1, 0.9];
+
+                            return (
+                                <motion.div
+                                    key={i}
+                                    className={`plan-card plan-card--${plan.color}`}
+                                    initial={{
+                                        opacity: 0,
+                                        y: 30,
+                                        x: `${offsets[i]}%`
+                                    }}
+                                    whileInView={{
+                                        opacity: 1,
+                                        y: 0,
+                                        x: `${offsets[i]}%`
+                                    }}
+                                    viewport={{ once: true, margin: "-100px" }}
+                                    transition={{
+                                        duration: 0.8,
+                                        delay: i * 0.1,
+                                        ease: "easeOut"
+                                    }}
+                                    whileHover={{
+                                        y: -10,
+                                        scale: baseScale[i] + 0.05,
+                                        transition: { duration: 0.3 }
+                                    }}
+                                >
+                                    {plan.popular && (
+                                        <div className="plan-card__badge">⭐ Más Popular</div>
+                                    )}
+
+                                    <div className="plan-card__header">
+                                        <div className="plan-card__name">{plan.name}</div>
+                                        <div className="plan-card__speed">
+                                            <span className="plan-speed-value">{plan.speed}</span>
+                                            <span className="plan-speed-unit">Mbps</span>
+                                        </div>
+                                        <div className="plan-card__symmetry">Simétrico ↑↓</div>
+                                    </div>
+
+                                    <div className="plan-card__price">
+                                        <span className="plan-price-currency">$</span>
+                                        <span className="plan-price-value">{plan.price}</span>
+                                        <span className="plan-price-period">/mes</span>
+                                    </div>
+
+                                    <ul className="plan-card__perks">
+                                        {plan.perks.map((perk, j) => (
+                                            <li key={j} className="plan-perk">
+                                                <span className="plan-perk__check">✓</span>
+                                                {perk}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <a href="#contacto" className={`plan-card__cta ${plan.popular ? 'btn-primary' : 'btn-outline'}`}>
+                                        {plan.popular ? '¡Lo quiero!' : 'Contratar'}
+                                    </a>
+                                </motion.div>
+                            )
+                        })}
+                    </div>
+
+                    <button
+                        className="plans__arrow plans__arrow--right"
+                        onClick={() => scroll('right')}
+                        aria-label="Ver plan siguiente"
+                    >
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            <path d="M9 18l6-6-6-6" />
+                        </svg>
+                    </button>
+                </div>
+
+                <p className="plans__footnote">
+                    * Precios en USD. Los valores pueden variar según tu zona. Consultá disponibilidad.
+                </p>
+            </div>
+        </section>
+    )
+}
+```
+
+## Usage
+
+```jsx
+import Plans from './components/Plans'
+
+function App() {
+    return (
+        <div>
+            <Plans />
+        </div>
+    )
+}
+```
+
+## Customization
+
+### Add or Modify Plans
+
+```jsx
+const plans = [
+    {
+        name: 'Starter',
+        speed: 100,
+        price: 9.99,
+        popular: false,
+        color: 'blue',
+        perks: ['Feature 1', 'Feature 2'],
+    },
+    // Add more plans...
+]
+```
+
+### Adjust Scroll Amount
+
+```jsx
+const scrollAmount = clientWidth > 600 ? 400 : clientWidth * 0.9;
+```
+
+### Change Card Offsets
+
+```jsx
+const offsets = [-120, 0, 120]; // Wider spread
+```

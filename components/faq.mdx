@@ -1,0 +1,344 @@
+---
+title: 'FAQ Component'
+description: 'Animated accordion component with Framer Motion for frequently asked questions'
+---
+
+# FAQ Component
+
+The **FAQ** component displays frequently asked questions in an animated accordion format. Features smooth expand/collapse animations, staggered entrance effects, and single-item open behavior.
+
+## Features
+
+- **Accordion behavior**: Only one item open at a time
+- **Smooth animations**: Height and opacity transitions
+- **Rotate toggle icon**: Plus/minus icon rotates on open/close
+- **Staggered entrance**: Questions animate in sequence
+- **Click to toggle**: Click anywhere on question to expand
+- **6 pre-loaded questions**: Common ISP FAQs
+
+## Dependencies
+
+```jsx
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+```
+
+- **React**: `useState` for accordion state management
+- **Framer Motion**: `motion` and `AnimatePresence` for animations
+
+## Component State
+
+<ParamField path="open" type="number | null">
+  Index of currently open FAQ item, or `null` if all closed
+</ParamField>
+
+## FAQ Data Structure
+
+The component uses a static array of question-answer pairs:
+
+```jsx
+const faqs = [
+    {
+        q: '¿Qué es la fibra óptica y qué ventajas tiene?',
+        a: 'La fibra óptica transmite datos a través de luz en lugar de señales eléctricas, lo que permite velocidades mucho más altas, menor latencia y mayor estabilidad que el ADSL o el cable coaxial tradicional.',
+    },
+    {
+        q: '¿Cuánto tiempo tarda la instalación?',
+        a: 'En menos de 48 horas hábiles desde la contratación, nuestro equipo técnico realiza la instalación completa en tu domicilio, sin costo adicional.',
+    },
+    {
+        q: '¿Hay límite de datos o cuota de descarga?',
+        a: 'No. Todos nuestros planes son de datos ilimitados. Podés navegar, ver streaming en 4K y trabajar remotamente sin preocuparte por límites.',
+    },
+    {
+        q: '¿Puedo cambiar de plan después de contratar?',
+        a: 'Por supuesto. Podés hacer upgrade o downgrade de tu plan en cualquier momento sin penalización. El cambio se aplica desde el siguiente ciclo de facturación.',
+    },
+    {
+        q: '¿Incluyen el router WiFi?',
+        a: 'Sí, todos los planes incluyen un router de última generación. El plan Pro incluye WiFi 6 y el Ultra incluye WiFi 6E con cobertura extendida.',
+    },
+    {
+        q: '¿Hay contrato de permanencia?',
+        a: 'No existe permanencia mínima. Podés cancelar el servicio cuando quieras sin cargos por corte anticipado.',
+    },
+]
+```
+
+### FAQ Object Properties
+
+<ParamField path="q" type="string">
+  Question text displayed in the accordion header
+</ParamField>
+
+<ParamField path="a" type="string">
+  Answer text revealed when accordion item is expanded
+</ParamField>
+
+## Accordion Toggle Logic
+
+```jsx
+const [open, setOpen] = useState(null)
+
+// In the onClick handler:
+onClick={() => setOpen(open === i ? null : i)}
+```
+
+- If clicked item is already open, close it (set to `null`)
+- Otherwise, open the clicked item (set to its index)
+- This ensures only one item is open at a time
+
+## Animation Configuration
+
+### Container Stagger Animation
+
+```jsx
+<motion.div 
+    className="faq__list"
+    initial="hidden"
+    whileInView="visible"
+    viewport={{ once: true, margin: "-100px" }}
+    variants={{
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.1
+            }
+        }
+    }}
+>
+```
+
+- Triggers when scrolled into view
+- 100ms delay between each FAQ item
+
+### FAQ Item Entrance
+
+```jsx
+<motion.div
+    key={i}
+    className={`faq__item ${open === i ? 'faq__item--open' : ''}`}
+    onClick={() => setOpen(open === i ? null : i)}
+    variants={{
+        hidden: { opacity: 0, y: 15 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+    }}
+>
+```
+
+- Slides up from 15px below
+- 500ms fade and slide animation
+
+### Toggle Icon Rotation
+
+```jsx
+<motion.div 
+    className="faq__toggle"
+    animate={{ rotate: open === i ? 180 : 0 }}
+    transition={{ duration: 0.3 }}
+>
+    <span>{open === i ? '−' : '+'}</span>
+</motion.div>
+```
+
+- Rotates 180° when open
+- Changes from `+` to `−` symbol
+
+### Answer Expand/Collapse
+
+```jsx
+<AnimatePresence>
+    {open === i && (
+        <motion.div 
+            className="faq__answer"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+            <p>{faq.a}</p>
+        </motion.div>
+    )}
+</AnimatePresence>
+```
+
+- Animates height from 0 to auto
+- Fades in simultaneously
+- 300ms duration with smooth easing
+
+## Complete Component Code
+
+```jsx
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import './FAQ.css'
+
+const faqs = [
+    {
+        q: '¿Qué es la fibra óptica y qué ventajas tiene?',
+        a: 'La fibra óptica transmite datos a través de luz en lugar de señales eléctricas, lo que permite velocidades mucho más altas, menor latencia y mayor estabilidad que el ADSL o el cable coaxial tradicional.',
+    },
+    {
+        q: '¿Cuánto tiempo tarda la instalación?',
+        a: 'En menos de 48 horas hábiles desde la contratación, nuestro equipo técnico realiza la instalación completa en tu domicilio, sin costo adicional.',
+    },
+    {
+        q: '¿Hay límite de datos o cuota de descarga?',
+        a: 'No. Todos nuestros planes son de datos ilimitados. Podés navegar, ver streaming en 4K y trabajar remotamente sin preocuparte por límites.',
+    },
+    {
+        q: '¿Puedo cambiar de plan después de contratar?',
+        a: 'Por supuesto. Podés hacer upgrade o downgrade de tu plan en cualquier momento sin penalización. El cambio se aplica desde el siguiente ciclo de facturación.',
+    },
+    {
+        q: '¿Incluyen el router WiFi?',
+        a: 'Sí, todos los planes incluyen un router de última generación. El plan Pro incluye WiFi 6 y el Ultra incluye WiFi 6E con cobertura extendida.',
+    },
+    {
+        q: '¿Hay contrato de permanencia?',
+        a: 'No existe permanencia mínima. Podés cancelar el servicio cuando quieras sin cargos por corte anticipado.',
+    },
+]
+
+export default function FAQ() {
+    const [open, setOpen] = useState(null)
+
+    return (
+        <section className="faq" id="faq">
+            <div className="container">
+                <div className="faq__header">
+                    <h2 className="section-title">
+                        Respondemos tus <span>dudas</span>
+                    </h2>
+                    <p className="section-subtitle">
+                        Si no encontrás lo que buscás, escribinos al WhatsApp y te respondemos al instante.
+                    </p>
+                </div>
+
+                <motion.div 
+                    className="faq__list"
+                    initial="hidden"
+                    whileInView="visible"
+                    viewport={{ once: true, margin: "-100px" }}
+                    variants={{
+                        hidden: { opacity: 0 },
+                        visible: {
+                            opacity: 1,
+                            transition: {
+                                staggerChildren: 0.1
+                            }
+                        }
+                    }}
+                >
+                    {faqs.map((faq, i) => (
+                        <motion.div
+                            key={i}
+                            className={`faq__item ${open === i ? 'faq__item--open' : ''}`}
+                            onClick={() => setOpen(open === i ? null : i)}
+                            variants={{
+                                hidden: { opacity: 0, y: 15 },
+                                visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+                            }}
+                        >
+                            <div className="faq__question">
+                                <span>{faq.q}</span>
+                                <motion.div 
+                                    className="faq__toggle"
+                                    animate={{ rotate: open === i ? 180 : 0 }}
+                                    transition={{ duration: 0.3 }}
+                                >
+                                    <span>{open === i ? '−' : '+'}</span>
+                                </motion.div>
+                            </div>
+                            <AnimatePresence>
+                                {open === i && (
+                                    <motion.div 
+                                        className="faq__answer"
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    >
+                                        <p>{faq.a}</p>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
+                    ))}
+                </motion.div>
+            </div>
+        </section>
+    )
+}
+```
+
+## Usage
+
+```jsx
+import FAQ from './components/FAQ'
+
+function App() {
+    return (
+        <div>
+            <FAQ />
+        </div>
+    )
+}
+```
+
+## Customization
+
+### Add or Modify Questions
+
+```jsx
+const faqs = [
+    {
+        q: 'Your question here?',
+        a: 'Your answer here.',
+    },
+    // Add more FAQs...
+]
+```
+
+### Allow Multiple Items Open
+
+Replace the state logic to use an array:
+
+```jsx
+const [openItems, setOpenItems] = useState([])
+
+const toggleItem = (index) => {
+    setOpenItems(prev => 
+        prev.includes(index) 
+            ? prev.filter(i => i !== index) 
+            : [...prev, index]
+    )
+}
+
+// In the component:
+onClick={() => toggleItem(i)}
+className={`faq__item ${openItems.includes(i) ? 'faq__item--open' : ''}`}
+{openItems.includes(i) && (
+    <motion.div className="faq__answer">
+        {/* ... */}
+    </motion.div>
+)}
+```
+
+### Change Animation Timing
+
+```jsx
+// Faster expansion
+transition={{ duration: 0.2, ease: "easeInOut" }}
+
+// Longer stagger delay
+staggerChildren: 0.15
+```
+
+## Accessibility
+
+- Clickable area includes entire question row
+- Keyboard accessible (can be enhanced with `onKeyDown`)
+- Clear visual feedback with CSS classes
+- Semantic HTML structure with proper headings
