@@ -1,0 +1,67 @@
+{
+  "projectType": "saas",
+  "projectName": "Telenet",
+  "projectDescription": "High-speed fiber optic internet service provider in Venezuela offering residential connectivity plans from 300 to 1000 Mbps.",
+  "theme": "almond",
+  "primaryColor": "#f1d262",
+  "lightColor": "#7c6c34",
+  "darkColor": "#19160b",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart"]
+          },
+          {
+            "group": "Service Plans",
+            "pages": ["plans/overview", "plans/basico", "plans/hogar-plus", "plans/pro-gaming", "plans/comparison"]
+          },
+          {
+            "group": "Coverage & Installation",
+            "pages": ["coverage/availability", "coverage/installation-process", "coverage/equipment"]
+          },
+          {
+            "group": "Technical Details",
+            "pages": ["technical/fiber-optic-technology", "technical/router-specifications", "technical/network-performance"]
+          },
+          {
+            "group": "Support",
+            "pages": ["support/faq", "support/contact", "support/troubleshooting"]
+          }
+        ]
+      },
+      {
+        "tab": "Components",
+        "groups": [
+          {
+            "group": "UI Components",
+            "pages": ["components/hero", "components/navbar", "components/plans", "components/coverage", "components/faq", "components/footer"]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Three-tier pricing plans (300/600/1000 Mbps)",
+    "Symmetric fiber optic connectivity",
+    "Free WiFi 6/6E router included",
+    "24/7 technical support",
+    "No data limits or download quotas",
+    "Interactive coverage map with office location",
+    "WhatsApp customer service integration",
+    "Animated hero carousel showcasing services"
+  ],
+  "publicApiSurface": [
+    "Hero component with carousel slides",
+    "Plans component with pricing cards",
+    "Coverage component with Google Maps integration",
+    "FAQ accordion component",
+    "Globe visualization component",
+    "WhatsApp contact button",
+    "Navbar with smooth scrolling",
+    "Footer with social links"
+  ]
+}
